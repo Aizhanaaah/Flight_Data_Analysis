@@ -15,17 +15,15 @@ def clear_csv_file(filename):
     print(f"All data removed from {filename}.")
 clear_csv_file("flight_data.csv")
 
-
 url = "https://opensky-network.org/api/states/all"
 response = requests.get(url)
 if response.status_code == 200:
     data = response.json().get('states', [])    
-    columns = [
+    columns = [ 
         "icao24", "callsign", "origin_country", "time_position", "last_contact",
         "longitude", "latitude", "baro_altitude", "on_ground", "velocity",
         "true_track", "vertical_rate", "sensors", "geo_altitude", "squawk",
-        "spi", "position_source"
-    ]
+        "spi", "position_source"]
     df = pd.DataFrame(data, columns=columns)
     if not os.path.exists(filename):
         df.to_csv(filename, index=False)
@@ -50,20 +48,20 @@ plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.show()
 
-
-on_ground_counts = df['on_ground'].value_counts()
-print(on_ground_counts)
-on_ground = on_ground_counts.get(True, 0)
-above_ground = on_ground_counts.get(False, 0)
-labels = ['On Ground', 'In Air']
-sizes = [on_ground, above_ground]
-colors = ['#ff9999', '#66b3ff']
-explode = (0.05, 0)
-plt.figure(figsize=(6, 6))
-plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=colors, explode=explode, shadow=True)
-plt.title('Aircraft Status: On Ground vs In Air')
-plt.axis('equal') 
-plt.show()
+def is_flying(df):
+    on_ground_counts = df['on_ground'].value_counts()
+    print(on_ground_counts)
+    on_ground = on_ground_counts.get(True, 0)
+    above_ground = on_ground_counts.get(False, 0)
+    labels = ['On Ground', 'In Air']
+    sizes = [on_ground, above_ground]
+    colors = ['#ff9999', '#66b3ff']
+    explode = (0.05, 0)
+    plt.figure(figsize=(6, 6))
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140, colors=colors, explode=explode, shadow=True)
+    plt.title('Aircraft Status: On Ground vs In Air')
+    plt.axis('equal') 
+    plt.show()
 
 
 
@@ -96,6 +94,7 @@ def speed_density(df):
     plt.tight_layout()
     plt.show()
 
+
 def altitude_density(df):
     altitudes = df['geo_altitude'].dropna().values
     bins = [0, 2000, 4000, 6000, 8000, 10000, 12000]
@@ -112,4 +111,4 @@ def altitude_density(df):
 
 speed_density(df)
 altitude_density(df)
-
+is_flying(df)
