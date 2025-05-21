@@ -75,7 +75,6 @@ for _, row in gdf_clean.iterrows():
         popup=f"{row.callsign} ({row.origin_country})",
         icon=folium.Icon(color="blue", icon="plane", prefix="fa")).add_to(m)
 m.save("aircraft_map.html")
-print("Map successfully generated without NaN locations!")
 display(m)
 
 
